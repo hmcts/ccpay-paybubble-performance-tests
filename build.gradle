@@ -1,0 +1,49 @@
+plugins {
+    id 'com.github.lkishalmi.gatling' version '3.0.2'
+    id "org.owasp.dependencycheck" version "5.2.1"
+}
+
+apply plugin: 'com.github.lkishalmi.gatling'
+apply plugin: 'scala'
+
+group 'KapilJain'
+version '1.0-SNAPSHOT'
+
+sourceCompatibility = "1.8"
+targetCompatibility = "1.8"
+
+repositories {
+    mavenCentral()
+}
+
+ext {
+    gatlingVersion = '3.1.1'
+    scalaVersion = '2.12.8'
+}
+
+dependencies {
+    testCompile group: 'org.scala-lang', name: 'scala-library', version: scalaVersion
+    compileOnly group: 'io.gatling.highcharts', name: 'gatling-charts-highcharts', version: gatlingVersion
+    testCompile group: 'io.gatling', name: 'gatling-app', version: gatlingVersion
+    gatlingRuntime group: 'io.gatling.highcharts', name: 'gatling-charts-highcharts', version: gatlingVersion
+}
+
+jar {
+    manifest {
+        attributes 'Main-Class': 'io.gatling.app.Gatling'
+    }
+    from {
+        configurations.testCompile.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+    from sourceSets.test.output
+    exclude 'META-INF/*.RSA', 'META-INF/*.SF', 'META-INF/*.DSA'
+}
+
+gatling {
+    toolVersion = '3.1.1'
+    scalaVersion = '2.12.8'
+    simulations = [
+            'uk.gov.hmcts.paybubble.simulation.CCPaybubbleSCN'
+    ]
+}
+
