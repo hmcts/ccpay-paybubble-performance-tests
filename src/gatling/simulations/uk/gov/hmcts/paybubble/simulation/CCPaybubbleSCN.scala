@@ -8,7 +8,6 @@ class CCPaybubbleSCN extends Simulation {
 	val uri02 = "https://idam-web-public.demo.platform.hmcts.net/login"
 	val uri03 = "https://paybubble.platform.hmcts.net"
 	val uri08 = "https://ccpay-bubble-frontend-demo.service.core-compute-demo.internal"
-	val uri10 = "https://app1.pci-pal.com/app_launch.asp"
 
 
 	val httpProtocol = http
@@ -79,68 +78,8 @@ class CCPaybubbleSCN extends Simulation {
 			.resources(http("PB_004_002_SearchCase_paymentgroups")
 			.get(uri08 + "/api/payment-history/cases/1111111111118817/paymentgroups"),
             http("PB_004_003_SearchCase")
-			.get(uri08 + "/api/bulk-scan/cases/1111111111118817")
-					.check(jsonPath("$.data.payments[0].dcn_reference").saveAs("dcnNumber"))
-							.check(jsonPath("$.data.payments[0].id").saveAs("dcnID"))
-							.check(jsonPath("$.data.payments[0].date_banked").saveAs("banked_date"))
-							.check(jsonPath("$.data.payments[0].date_created").saveAs("date_created"))
-							.check(jsonPath("$.data.payments[0].date_updated").saveAs("date_updated"))))
-		.pause(12)
-		.exec(http("PB_005_001_AllocateToNewFee")
-			.get(uri08 + "/api/fees"))
-		.pause(4)
-		.exec(http("PB_006_001_FeeSearch")
-			.get(uri08 + "/api/fees-jurisdictions/1")
-			.resources(http("PB_006_002_FeeSearch")
-			.get(uri08 + "/api/fees-jurisdictions/2")))
-		.pause(7)
-		.exec(http("request_20")
-			.post(uri08 + "/api/payment-groups")
-			.headers(headers_20)
-			.body(StringBody("""{"fees":[{"code":"FEE0120","version":"4","calculated_amount":"550","memo_line":"XXX","natural_account_code":"XXX","ccd_case_number":"1111111111118817","jurisdiction1":"tribunal","jurisdiction2":"upper tribunal lands chamber","description":" Hrg as to entitlement- s84 LoPA1925(e) discharge /modify restrictive convenant ","volume":1,"fee_amount":"550"}]}"""))
-			.check(jsonPath("$.data.payment_group_reference").saveAs("pgr_id"))
-			.resources(http("request_22")
-			.get(uri08 + "/api/payment-history/bulk-scan-feature")
-			.headers(headers_9),
-            http("request_23")
-			.get(uri08 + "/api/payment-history/payment-groups/${pgr_id}"),
-            http("request_24")
 			.get(uri08 + "/api/bulk-scan/cases/1111111111118817")))
-		.pause(3)
-		.exec(http("request_25")
-			.get(uri08 + "/api/bulk-scan/cases?document_control_number=${dcnNumber}")
-			.resources(http("request_26")
-			.get(uri08 + "/api/payment-history/cases/1111111111118817/paymentgroups")
-				.check(jsonPath("$.payment_groups[0].payments[0].reference").saveAs("payallocatereference"))))
-		.pause(15)
-		.exec(http("request_27")
-			.patch(uri08 + "/api/payment-history/bulk-scan-payments/${dcnNumber}/status/PROCESSED")
-			.headers(headers_27)
-			.body(StringBody("""PROCESSED"""))
-			.resources(http("request_28")
-			.post(uri08 + "/api/payment-history/payment-groups/${pgr_id}/bulk-scan-payments")
-			.headers(headers_20)
-				.body(StringBody("""{"amount":540,"banked_date":"${banked_date}","ccd_case_number":"1111111111118817","exception_record":null,"currency":"GBP","document_control_number":"${dcnNumber}","external_provider":"exela","giro_slip_no":"123456","payment_channel":{"description":"","name":"bulk scan"},"payment_status":{"description":"bulk scan payment completed","name":"success"},"payment_method":"CHEQUE","requestor":"PROBATE","site_id":"AA08"}""")),
-            http("request_29")
-			.post(uri08 + "/api/payment-history/payment-allocations")
-			.headers(headers_20)
-							.body(StringBody("""{"payment_allocation_status":{"description":"","name":"Allocated"},"payment_group_reference":"${pgr_id}","payment_reference":"${payallocatereference}","reason":"Incorrect payment received","explanation":"I have put a stop on the case and contacted the applicant requesting the balance of payment","user_name":"Kapil Jain"}""")),
-            http("request_30")
-			.get(uri08 + "/api/bulk-scan/cases/1111111111118817"),
-            http("request_31")
-			.get(uri08 + "/api/payment-history/cases/1111111111118817/paymentgroups")))
-		.pause(17)
-		.exec(http("request_32")
-			.get(uri08 + "/api/payment-history/bulk-scan-feature")
-			.headers(headers_9)
-			.resources(http("request_33")
-			.get(uri08 + "/api/payment-history/payment-groups/${pgr_id}")))
-		.pause(8)
-		.exec(http("request_34")
-			.post(uri08 + "/api/payment-history/payment-groups/${pgr_id}/card-payments")
-			.headers(headers_20)
-			.body(StringBody("""{"currency":"GBP","description":"PayBubble payment","channel":"telephony","provider":"pci pal","ccd_case_number":"1111111111118817","amount":"10.00","service":"DIVORCE","site_id":"AA07"}""")))
-		.pause(11)
+					.pause(11)
 		.exec(http("request_161")
 			.get(uri03 + "/?")
 			.check(status.is(200)))
