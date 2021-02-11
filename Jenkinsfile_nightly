@@ -5,7 +5,7 @@
  * Author: Kapil Jain
  */
 
-properties([
+/*properties([
         pipelineTriggers([cron('00 21 * * *')]),
         parameters([
                 string(name: 'ENVIRONMENT', defaultValue: 'Demo', description: 'Environment to test'),
@@ -29,12 +29,12 @@ withNightlyPipeline("java", product, component) {
     env.IDAM_URL = 'https://idam-web-public.demo.platform.hmcts.net/login'
 
 
-    enablePerformanceTest()
+    enablePerformanceTest()*/
 
-    after('performanceTest') {
-        steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'functional-output/**/*'
-    }
+   // after('performanceTest') {
+   //     steps.archiveArtifacts allowEmptyArchive: true, artifacts: 'functional-output/**/*'
+   // }
 
-    enableSlackNotifications('#ccpaybubble-nightly-builds')
+   //enableSlackNotifications('#ccpaybubble-nightly-builds')
 
 }
