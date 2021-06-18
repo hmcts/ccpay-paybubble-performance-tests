@@ -6,7 +6,7 @@ plugins {
 apply plugin: 'com.github.lkishalmi.gatling'
 apply plugin: 'scala'
 
-group 'KapilJain'
+group 'uk.gov.hmcts.reform'
 version '1.0-SNAPSHOT'
 
 sourceCompatibility = "11"
